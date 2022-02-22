@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beads experiment</title>
+    <script src="https://unpkg.com/jspsych@7.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.0"></script>
+    <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css"/>
+
+</head>
+<body>
+<script>
+
+    const jsPsych = initJsPsych();
+
+    let timeline = [];
+
+    const welcome = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "Welcome to the experiment. Press any key to begin."
+    }
+    timeline.push(welcome);
+
+    const instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: `
+
+        <p>Instructions will go here.</p>
+
+        <p>Press 'space' key to continue.</p>
+
+        `
+    }
+    timeline.push(instructions);
+
+    let horizontal_position_beads = 0;
+     // left:${horizontal_position_beads}%;
+
+    const test_stimuli = [
+        {stimulus: `<img src='img/sample_1_red.png' style="position:absolute; top:50%; left:50%; margin-top:-47px; margin-left:-45px;"></img>`},
+        {stimulus: `<img src='img/sample_2_red.png' ></img>`},
+        // {stimulus: "img/sample_3_red.png"},
+        // {stimulus: "img/sample_4_red.png"},
+        // {stimulus: "img/sample_5_red.png"},
+        // {stimulus: "img/sample_6_red.png"},
+        // {stimulus: "img/sample_7_red.png"},
+            ]
+
+    const fixation = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `<div style="font-size:60px;">+</div>`,
+            choices: "NO_KEYS",
+            trial_duration: 1000,
+            data: {
+                task: 'fixation'
+            }
+        }
+
+    const test = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: jsPsych.timelineVariable('stimulus'),
+            // choices: ['f', 'j'],
+            data: {
+                task: 'response',
+            },
+        }
+
+        const test_procedure = {
+            timeline: [fixation, test],
+            timeline_variables: test_stimuli,
+            randomize_order: true,
+            repetitions: 1,
+        }
+        timeline.push(test_procedure);
+
+
+    // Testing an animation
+    let percentage;
+    for (let step = 0; step < 131; step++) {
+        percentage = 50 - step / 2;
+        const change_jar = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+            <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
+            margin-top:-233px; margin-left:-233px;"></img>
+            `,
+            choices: "NO_KEYS",
+            trial_duration: 5,
+        }
+        timeline.push(change_jar);
+    }
+
+    for (let step = 0; step < 131; step++) {
+        percentage = 0 + step / 2 - 15;
+        const change_jar = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+            <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
+            margin-top:-233px; margin-left:-233px;"></img>
+            `,
+            choices: "NO_KEYS",
+            trial_duration: 5,
+        }
+        timeline.push(change_jar);
+    }
+
+    const jar = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `
+        <img src='img/jar_covered.png' style="position:absolute; top:50%; left:50%;
+            margin-top:-233px; margin-left:-233px;"></img>
+        `,
+    }
+    timeline.push(jar);
+
+
+
+    jsPsych.run(timeline);
+
+</script>
+</body>
+</html>
