@@ -77,15 +77,19 @@
         timeline.push(test_procedure);
 
 
-    // Testing an animation
+    // Animation of the jar changing
     let percentage;
     for (let step = 0; step < 131; step++) {
         percentage = 50 - step / 2;
         const change_jar = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: `
-            <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
-            margin-top:-233px; margin-left:-233px;"></img>
+
+            <p><img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
+            margin-top:-233px; margin-left:-233px;"></img></p>
+
+            <p>Changing the jar</p>
+
             `,
             choices: "NO_KEYS",
             trial_duration: 5,
@@ -100,6 +104,7 @@
             stimulus: `
             <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
             margin-top:-233px; margin-left:-233px;"></img>
+            <p style="margin-top: 600px;">Changing the jar</p>
             `,
             choices: "NO_KEYS",
             trial_duration: 5,
