@@ -13,7 +13,15 @@
 <body>
 <script>
 
-    const jsPsych = initJsPsych();
+    function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+    }
+
+    const jsPsych = initJsPsych({
+            on_finish: function(){
+                jsPsych.data.displayData();
+            }
+        });
 
     let timeline = [];
 
@@ -36,20 +44,56 @@
     }
     timeline.push(instructions);
 
-    let horizontal_position_beads = 0;
-     // left:${horizontal_position_beads}%;
+    let num_red_samples;
+    for (let iter = 0; iter < 5; iter++) {
+        let face_path = `img/faces/${iter + 1}.png`;
 
-    const test_stimuli = [
-        {stimulus: `<img src='img/sample_1_red.png' style="position:absolute; top:50%; left:50%; margin-top:-47px; margin-left:-45px;"></img>`},
-        {stimulus: `<img src='img/sample_2_red.png' ></img>`},
-        // {stimulus: "img/sample_3_red.png"},
-        // {stimulus: "img/sample_4_red.png"},
-        // {stimulus: "img/sample_5_red.png"},
-        // {stimulus: "img/sample_6_red.png"},
-        // {stimulus: "img/sample_7_red.png"},
-            ]
+        num_red_samples = getRandomInt(6) + 1;
 
-    const fixation = {
+        const test_procedure = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+            <img src='img/sample_${num_red_samples}_red.png'
+            style="position:absolute;
+            top:50%;
+            left:50%;
+            margin-top:-47px;
+            margin-left:-45px;"></img>
+            <img src="${face_path}"
+            style="position:absolute;
+            top:50%;
+            left:80%";></img>
+            `,
+            data: {
+                task: 'trial',
+                number_red_samples: num_red_samples
+            }
+        }
+        timeline.push(test_procedure);
+
+
+        // const test_stimuli = [
+        // {stimulus: `
+        //     <img src='img/sample_1_red.png'
+        //     style="position:absolute;
+        //     top:50%;
+        //     left:50%;
+        //     margin-top:-47px;
+        //     margin-left:-45px;"></img>
+        //     <img src="${face_path}"
+        //     style="position:absolute;
+        //     top:50%;
+        //     left:80%";></img>
+        //     `},
+        // {stimulus: `<img src='img/sample_2_red.png' ></img>`},
+        // // {stimulus: "img/sample_3_red.png"},
+        // // {stimulus: "img/sample_4_red.png"},
+        // // {stimulus: "img/sample_5_red.png"},
+        // // {stimulus: "img/sample_6_red.png"},
+        // // {stimulus: "img/sample_7_red.png"},
+        //     ]
+
+        const fixation = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: `<div style="font-size:60px;">+</div>`,
             choices: "NO_KEYS",
@@ -58,68 +102,74 @@
                 task: 'fixation'
             }
         }
+        timeline.push(fixation);
 
-    const test = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: jsPsych.timelineVariable('stimulus'),
-            // choices: ['f', 'j'],
-            data: {
-                task: 'response',
-            },
-        }
+        // const test = {
+        //     type: jsPsychHtmlKeyboardResponse,
+        //     stimulus: jsPsych.timelineVariable('stimulus'),
+        //     // choices: ['f', 'j'],
+        //     data: {
+        //         task: 'response',
+        //     },
+        // }
+        //
+        // const test_procedure = {
+        //     timeline: [fixation, test],
+        //     timeline_variables: test_stimuli,
+        //     randomize_order: true,
+        //     repetitions: 1,
+        // }
+        // timeline.push(test_procedure);
 
-        const test_procedure = {
-            timeline: [fixation, test],
-            timeline_variables: test_stimuli,
-            randomize_order: true,
-            repetitions: 1,
-        }
-        timeline.push(test_procedure);
+
+    }
+
+
 
 
     // Animation of the jar changing
-    let percentage;
-    for (let step = 0; step < 131; step++) {
-        percentage = 50 - step / 2;
-        const change_jar = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: `
-
-            <p><img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
-            margin-top:-233px; margin-left:-233px;"></img></p>
-
-            <p>Changing the jar</p>
-
-            `,
-            choices: "NO_KEYS",
-            trial_duration: 5,
-        }
-        timeline.push(change_jar);
-    }
-
-    for (let step = 0; step < 131; step++) {
-        percentage = 0 + step / 2 - 15;
-        const change_jar = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: `
-            <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
-            margin-top:-233px; margin-left:-233px;"></img>
-            <p style="margin-top: 600px;">Changing the jar</p>
-            `,
-            choices: "NO_KEYS",
-            trial_duration: 5,
-        }
-        timeline.push(change_jar);
-    }
-
-    const jar = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `
-        <img src='img/jar_covered.png' style="position:absolute; top:50%; left:50%;
-            margin-top:-233px; margin-left:-233px;"></img>
-        `,
-    }
-    timeline.push(jar);
+    // let percentage;
+    // for (let step = 0; step < 131; step++) {
+    //     percentage = 50 - step / 2;
+    //     const change_jar = {
+    //         type: jsPsychHtmlKeyboardResponse,
+    //         stimulus: `
+    //
+    //         <p><img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
+    //         margin-top:-233px; margin-left:-233px;"></img></p>
+    //
+    //         <p>Changing the jar</p>
+    //
+    //         `,
+    //         choices: "NO_KEYS",
+    //         trial_duration: 5,
+    //     }
+    //     timeline.push(change_jar);
+    // }
+    //
+    // for (let step = 0; step < 131; step++) {
+    //     percentage = 0 + step / 2 - 15;
+    //     const change_jar = {
+    //         type: jsPsychHtmlKeyboardResponse,
+    //         stimulus: `
+    //         <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
+    //         margin-top:-233px; margin-left:-233px;"></img>
+    //         <p style="margin-top: 600px;">Changing the jar</p>
+    //         `,
+    //         choices: "NO_KEYS",
+    //         trial_duration: 5,
+    //     }
+    //     timeline.push(change_jar);
+    // }
+    //
+    // const jar = {
+    //     type: jsPsychHtmlKeyboardResponse,
+    //     stimulus: `
+    //     <img src='img/jar_covered.png' style="position:absolute; top:50%; left:50%;
+    //         margin-top:-233px; margin-left:-233px;"></img>
+    //     `,
+    // }
+    // timeline.push(jar);
 
 
 
