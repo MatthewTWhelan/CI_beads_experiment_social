@@ -13,9 +13,159 @@
 <body>
 <script>
 
+    // Creating functions. Most of these are for animations.
+
     function getRandomInt(max) {
     return Math.floor(Math.random() * max);
     }
+
+    // Jar and agent coming onto the screen
+    function jarAgentEnteringScreen (agent_img_path) {
+        let percentage;
+        for (let step = 0; step < 131; step++) {
+            percentage = step / 2 - 15;
+            const change_jar_on = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+                <img src='img/jar_covered.png'
+                style="position:absolute;
+                top:50%;
+                left:${percentage}%;
+                margin-top:-233px;
+                margin-left:-233px;"/>
+
+                <img src="${agent_img_path}"
+                 style="position:absolute;
+                 top:30%;
+                 left:${130 - percentage}%;
+                 height:200px;
+                 width:auto"/>
+
+                <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and agent</p>
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(change_jar_on);
+        }
+    }
+
+    // Jar and agent leaving the screen
+    function jarAgentLeavingScreen (agent_img_path) {
+        let percentage;
+        for (let step = 0; step < 131; step++) {
+            percentage = 50 - step / 2;
+            const change_jar_off = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+
+                <img src='img/jar_covered.png'
+                style="position:absolute;
+                top:50%;
+                left:${percentage}%;
+                margin-top:-233px;
+                margin-left:-233px;"/>
+
+                <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and agent</p>
+
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(change_jar_off);
+        }
+    }
+
+    function agentChoosingBeads (agent_img_path) {
+        let percentage;
+        for (let step = 0; step < 261; step++) {
+            if (step < 131) {
+                percentage = step / 2 - 10;
+            } else {
+                percentage = 120 - step / 2;
+            }
+
+            const agent_choosing_beads = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+
+                <img src="img/hand_back.png"
+                 style="position:absolute;
+                 top:${percentage}%;
+                 left:50%;
+                 transform: translate(-50%, -50%) rotate(180deg);
+                 height:300px;
+                 width:auto;
+                 "/>
+
+                <img src='img/jar_covered_opened.png'
+                style="position:absolute;
+                top:50%;
+                left:50%;
+                margin-top:-480px;
+                margin-left:-300px;"/>
+
+                <img src="${agent_img_path}"
+                 style="position:absolute;
+                 top:30%;
+                 left:70%;
+                 height:200px;
+                 width:auto"/>
+
+                <p style="position:absolute;
+                top:90%;
+                left:50%;
+                transform: translate(-50%, -50%);">Agent picking beads</p>
+
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(agent_choosing_beads);
+        }
+    }
+
+    function agent_viewing_beads(agent_img_path) {
+        const agent_viewing_beads = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+
+            <img src='img/jar_covered_opened.png'
+            style="position:absolute;
+            top:50%;
+            left:50%;
+            margin-top:-480px;
+            margin-left:-300px;"/>
+
+            <img src="${agent_img_path}"
+             style="position:absolute;
+             top:30%;
+             left:70%;
+             height:200px;
+             width:auto"/>
+
+             <img src="img/hand_back.png"
+             style="position:absolute;
+             top:32%;
+             left:73%;
+             height:120px;
+             width:auto;
+             "/>
+
+            <p style="position:absolute;
+            top:90%;
+            left:50%;
+            transform: translate(-50%, -50%);">Agent making a decision</p>
+
+            `,
+            choices: "NO_KEYS",
+            trial_duration: 2000,
+        }
+        timeline.push(agent_viewing_beads);
+    }
+
+
+//////////////////////// Begin experiment timeline ///////////////////////////////
 
     const jsPsych = initJsPsych({
             on_finish: function(){
@@ -25,142 +175,33 @@
 
     let timeline = [];
 
-    const welcome = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: "Welcome to the experiment. Press any key to begin."
-    }
-    timeline.push(welcome);
-
-    const instructions = {
-        type: jsPsychHtmlKeyboardResponse,
-        choices: [' '],
-        stimulus: `
-
-        <p>Instructions will go here.</p>
-
-        <p>Press 'space' key to continue.</p>
-
-        `
-    }
-    timeline.push(instructions);
-
-    let num_red_samples;
-    for (let iter = 0; iter < 5; iter++) {
-        let face_path = `img/faces/${iter + 1}.png`;
-
-        num_red_samples = getRandomInt(6) + 1;
-
-        const test_procedure = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: `
-            <img src='img/sample_${num_red_samples}_red.png'
-            style="position:absolute;
-            top:50%;
-            left:50%;
-            margin-top:-47px;
-            margin-left:-45px;"></img>
-            <img src="${face_path}"
-            style="position:absolute;
-            top:50%;
-            left:80%";></img>
-            `,
-            data: {
-                task: 'trial',
-                number_red_samples: num_red_samples
-            }
-        }
-        timeline.push(test_procedure);
-
-
-        // const test_stimuli = [
-        // {stimulus: `
-        //     <img src='img/sample_1_red.png'
-        //     style="position:absolute;
-        //     top:50%;
-        //     left:50%;
-        //     margin-top:-47px;
-        //     margin-left:-45px;"></img>
-        //     <img src="${face_path}"
-        //     style="position:absolute;
-        //     top:50%;
-        //     left:80%";></img>
-        //     `},
-        // {stimulus: `<img src='img/sample_2_red.png' ></img>`},
-        // // {stimulus: "img/sample_3_red.png"},
-        // // {stimulus: "img/sample_4_red.png"},
-        // // {stimulus: "img/sample_5_red.png"},
-        // // {stimulus: "img/sample_6_red.png"},
-        // // {stimulus: "img/sample_7_red.png"},
-        //     ]
-
-        const fixation = {
-            type: jsPsychHtmlKeyboardResponse,
-            stimulus: `<div style="font-size:60px;">+</div>`,
-            choices: "NO_KEYS",
-            trial_duration: 1000,
-            data: {
-                task: 'fixation'
-            }
-        }
-        timeline.push(fixation);
-
-        // const test = {
-        //     type: jsPsychHtmlKeyboardResponse,
-        //     stimulus: jsPsych.timelineVariable('stimulus'),
-        //     // choices: ['f', 'j'],
-        //     data: {
-        //         task: 'response',
-        //     },
-        // }
-        //
-        // const test_procedure = {
-        //     timeline: [fixation, test],
-        //     timeline_variables: test_stimuli,
-        //     randomize_order: true,
-        //     repetitions: 1,
-        // }
-        // timeline.push(test_procedure);
-
-
-    }
+    jarAgentEnteringScreen('img/faces/1.png');
+    agentChoosingBeads('img/faces/1.png');
+    agent_viewing_beads('img/faces/1.png')
 
 
 
+    // jarAgentLeavingScreen();
 
-    // Animation of the jar changing
-    // let percentage;
-    // for (let step = 0; step < 131; step++) {
-    //     percentage = 50 - step / 2;
-    //     const change_jar = {
-    //         type: jsPsychHtmlKeyboardResponse,
-    //         stimulus: `
-    //
-    //         <p><img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
-    //         margin-top:-233px; margin-left:-233px;"></img></p>
-    //
-    //         <p>Changing the jar</p>
-    //
-    //         `,
-    //         choices: "NO_KEYS",
-    //         trial_duration: 5,
-    //     }
-    //     timeline.push(change_jar);
+    // const welcome = {
+    //     type: jsPsychHtmlKeyboardResponse,
+    //     stimulus: "Welcome to the experiment. Press any key to begin."
     // }
+    // timeline.push(welcome);
     //
-    // for (let step = 0; step < 131; step++) {
-    //     percentage = 0 + step / 2 - 15;
-    //     const change_jar = {
-    //         type: jsPsychHtmlKeyboardResponse,
-    //         stimulus: `
-    //         <img src='img/jar_covered.png' style="position:absolute; top:50%; left:${percentage}%;
-    //         margin-top:-233px; margin-left:-233px;"></img>
-    //         <p style="margin-top: 600px;">Changing the jar</p>
-    //         `,
-    //         choices: "NO_KEYS",
-    //         trial_duration: 5,
-    //     }
-    //     timeline.push(change_jar);
+    // const instructions = {
+    //     type: jsPsychHtmlKeyboardResponse,
+    //     choices: [' '],
+    //     stimulus: `
+    //
+    //     <p>Instructions will go here.</p>
+    //
+    //     <p>Press 'space' key to continue.</p>
+    //
+    //     `
     // }
+    // timeline.push(instructions);
+    //
     //
     // const jar = {
     //     type: jsPsychHtmlKeyboardResponse,
@@ -170,6 +211,102 @@
     //     `,
     // }
     // timeline.push(jar);
+
+    // let num_red_samples;
+    // for (let iter = 0; iter < 5; iter++) {
+    //     let face_path = `img/faces/${iter + 1}.png`;
+    //
+    //     num_red_samples = getRandomInt(6) + 1;
+    //
+    //     const new_trial_procedure = {
+    //         type: jsPsychHtmlKeyboardResponse,
+    //         stimulus: `
+    //
+    //
+    //         `
+    //
+    //     }
+    //
+    //
+    //     const test_procedure = {
+    //         type: jsPsychHtmlKeyboardResponse,
+    //         stimulus: `
+    //         <img src='img/sample_${num_red_samples}_red.png'
+    //         style="position:absolute;
+    //         top:50%;
+    //         left:50%;
+    //         margin-top:-47px;
+    //         margin-left:-45px;"></img>
+    //         <img src="${face_path}"
+    //         style="position:absolute;
+    //         top:30%;
+    //         left:80%;
+    //         height:200px;
+    //         width:auto"></img>
+    //         `,
+    //         data: {
+    //             task: 'trial',
+    //             number_red_samples: num_red_samples
+    //         }
+    //     }
+    //     timeline.push(test_procedure);
+    //
+    //
+    //     // const test_stimuli = [
+    //     // {stimulus: `
+    //     //     <img src='img/sample_1_red.png'
+    //     //     style="position:absolute;
+    //     //     top:50%;
+    //     //     left:50%;
+    //     //     margin-top:-47px;
+    //     //     margin-left:-45px;"></img>
+    //     //     <img src="${face_path}"
+    //     //     style="position:absolute;
+    //     //     top:50%;
+    //     //     left:80%";></img>
+    //     //     `},
+    //     // {stimulus: `<img src='img/sample_2_red.png' ></img>`},
+    //     // // {stimulus: "img/sample_3_red.png"},
+    //     // // {stimulus: "img/sample_4_red.png"},
+    //     // // {stimulus: "img/sample_5_red.png"},
+    //     // // {stimulus: "img/sample_6_red.png"},
+    //     // // {stimulus: "img/sample_7_red.png"},
+    //     //     ]
+    //
+    //     const fixation = {
+    //         type: jsPsychHtmlKeyboardResponse,
+    //         stimulus: `<div style="font-size:60px;">+</div>`,
+    //         choices: "NO_KEYS",
+    //         trial_duration: 1000,
+    //         data: {
+    //             task: 'fixation'
+    //         }
+    //     }
+    //     timeline.push(fixation);
+    //
+    //     // const test = {
+    //     //     type: jsPsychHtmlKeyboardResponse,
+    //     //     stimulus: jsPsych.timelineVariable('stimulus'),
+    //     //     // choices: ['f', 'j'],
+    //     //     data: {
+    //     //         task: 'response',
+    //     //     },
+    //     // }
+    //     //
+    //     // const test_procedure = {
+    //     //     timeline: [fixation, test],
+    //     //     timeline_variables: test_stimuli,
+    //     //     randomize_order: true,
+    //     //     repetitions: 1,
+    //     // }
+    //     // timeline.push(test_procedure);
+    //
+    //
+    // }
+
+
+
+
 
 
 
