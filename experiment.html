@@ -6,6 +6,7 @@
     <script src="https://unpkg.com/jspsych@7.1.2"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-slider-response@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.0"></script>
     <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css"/>
 
@@ -19,7 +20,7 @@
     return Math.floor(Math.random() * max);
     }
 
-    // Jar and agent coming onto the screen
+    // Jar and agent coming onto the screen, and then remaining there for 1 second
     function jarAgentEnteringScreen (agent_img_path) {
         let percentage;
         for (let step = 0; step < 131; step++) {
@@ -37,7 +38,7 @@
                 <img src="${agent_img_path}"
                  style="position:absolute;
                  top:30%;
-                 left:${130 - percentage}%;
+                 left:${120 - percentage}%;
                  height:200px;
                  width:auto"/>
 
@@ -48,6 +49,29 @@
             }
             timeline.push(change_jar_on);
         }
+        const jar_agent_still = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+            <img src='img/jar_covered.png'
+            style="position:absolute;
+            top:50%;
+            left:50%;
+            margin-top:-233px;
+            margin-left:-233px;"/>
+
+            <img src="${agent_img_path}"
+             style="position:absolute;
+             top:30%;
+             left:70%;
+             height:200px;
+             width:auto"/>
+
+            <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and agent</p>
+            `,
+            choices: "NO_KEYS",
+            trial_duration: 1000,
+        }
+        timeline.push(jar_agent_still);
     }
 
     // Jar and agent leaving the screen
@@ -175,11 +199,31 @@
 
     let timeline = [];
 
-    jarAgentEnteringScreen('img/faces/1.png');
-    agentChoosingBeads('img/faces/1.png');
-    agent_viewing_beads('img/faces/1.png')
+    // jarAgentEnteringScreen('img/faces/1.png');
+    // agentChoosingBeads('img/faces/1.png');
+    // agent_viewing_beads('img/faces/1.png')
 
 
+    const trial = {
+    type: jsPsychHtmlSliderResponse,
+    stimulus: `
+
+<div style="width:200px;
+margin-bottom: 40px;">
+        <p>Choose your confidence for a particular colour.</p>
+        <div style="width:50px; float: left;">
+            <p><img src="img/red_bead.png"/></p>
+        </div>
+        <div style="width:50px; float: right;">
+            <p><img src="img/green_bead.png"/></p>
+        </div>
+        </div>`,
+        slider_width: 100,
+    slider_start: 95,
+    // labels: ['100% chance of a red bead', '50% chance of either red or green', '100% chance of a green bead']
+};
+
+    timeline.push(trial);
 
     // jarAgentLeavingScreen();
 
