@@ -7,9 +7,13 @@
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-html-slider-response@1.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.0"></script>
     <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.0"></script>
     <link href="https://unpkg.com/jspsych@7.1.2/css/jspsych.css" rel="stylesheet" type="text/css"/>
 
+    <style>
+        body {overflow: hidden;}
+    </style>
 </head>
 <body>
 <script>
@@ -495,6 +499,33 @@
         });
 
     let timeline = [];
+
+    const welcome = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "Welcome to the experiment. Press any key to begin."
+    }
+    timeline.push(welcome);
+
+    const instructions = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: `
+
+        <p>Instructions will go here.</p>
+
+        <p>Press 'space' key to continue.</p>
+
+        `
+    }
+    timeline.push(instructions);
+
+
+    const enter_fullscreen = {
+    type: jsPsychFullscreen,
+    message: '<p>The experiment will switch to full screen mode when you press the button below. You can exit any time by hitting the Esc key.</p>',
+    fullscreen_mode: true
+    }
+    timeline.push(enter_fullscreen);
 
     let agent_img_path;
     let agent_choice;
