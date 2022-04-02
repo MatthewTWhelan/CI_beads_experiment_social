@@ -24,10 +24,218 @@
     return Math.floor(Math.random() * max);
     }
 
-    // Jar and agent coming onto the screen, and then remaining there for 1 second
-    function jarAgentEnteringScreen (agent_img_path) {
+    // Functions for the practice trials without the agent
+    // Only jar coming onto the screen
+    function jarEnteringScreen () {
         let percentage;
         for (let step = 0; step < 131; step++) {
+            percentage = step / 2 - 15;
+            const change_jar_on = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+                <img src='img/jar_covered.png'
+                style="position:absolute;
+                top:50%;
+                left:${percentage}%;
+                margin-top:-233px;
+                margin-left:-233px;"/>
+
+                <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar</p>
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(change_jar_on);
+        }
+        const jar_agent_still = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+            <img src='img/jar_covered.png'
+            style="position:absolute;
+            top:50%;
+            left:50%;
+            margin-top:-233px;
+            margin-left:-233px;"/>
+
+            <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar</p>
+            `,
+            choices: "NO_KEYS",
+            trial_duration: 1000,
+        }
+        timeline.push(jar_agent_still);
+    }
+
+    // Only jar leaving the screen
+    function jarLeavingScreen () {
+        let percentage;
+        for (let step = 0; step < 131; step++) {
+            percentage = 50 - step / 2;
+            const change_jar_off = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+
+                <img src='img/jar_covered.png'
+                style="position:absolute;
+                top:50%;
+                left:${percentage}%;
+                margin-top:-233px;
+                margin-left:-233px;"/>
+
+                <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and agent</p>
+
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(change_jar_off);
+        }
+    }
+
+    function participantChoosingBeadsWithoutAgent (participant_beads_img_path) {
+        let percentage;
+        let hand_img_path;
+        for (let step = 0; step < 261; step++) {
+            if (step < 131) {
+                percentage = step / 2 - 10;
+                hand_img_path = 'img/hand_back.png'
+            } else {
+                percentage = 120 - step / 2;
+                hand_img_path = 'img/hand_fist_edited.png'
+            }
+
+            const participant_choosing_beads = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+
+                <img src="${hand_img_path}"
+                 style="position:absolute;
+                 top:${percentage}%;
+                 left:50%;
+                 transform: translate(-50%, -50%) rotate(180deg);
+                 height:300px;
+                 width:auto;
+                 "/>
+
+                <img src='img/jar_covered_opened.png'
+                style="position:absolute;
+                top:50%;
+                left:50%;
+                margin-top:-480px;
+                margin-left:-300px;"/>
+
+                <p style="position:absolute;
+                top:90%;
+                left:50%;
+                transform: translate(-50%, -50%);">You are picking beads</p>
+
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(participant_choosing_beads);
+        }
+
+        for (let step = 0; step < 131; step++) {
+            percentage = 120 - step/2;
+            const participant_viewing_beads = {
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: `
+
+                <img src="${participant_beads_img_path}"
+                 style="position:absolute;
+                 top:${percentage}%;
+                 left:25%;
+                 transform: translate(-50%, -50%);
+                 height:400px;
+                 width:auto;
+                 "/>
+
+                <img src='img/jar_covered_opened.png'
+                style="position:absolute;
+                top:50%;
+                left:50%;
+                margin-top:-480px;
+                margin-left:-300px;"/>
+
+                <p style="position:absolute;
+                top:90%;
+                left:50%;
+                transform: translate(-50%, -50%);">You are picking beads</p>
+
+                `,
+                choices: "NO_KEYS",
+                trial_duration: 8,
+            }
+            timeline.push(participant_viewing_beads);
+        }
+
+    }
+
+    function participantStateConfidenceWithoutAgent (participant_beads_img_path) {
+        const participant_stating_confidence = {
+            type: jsPsychHtmlSliderResponse,
+            stimulus: `
+
+            <div style="z-index: -1">
+
+            <img src="${participant_beads_img_path}"
+             style="position:absolute;
+             top:55%;
+             left:25%;
+             transform: translate(-50%, -50%);
+             height:400px;
+             width:auto;
+             "/>
+
+            <img src='img/jar_covered_opened.png'
+            style="position:absolute;
+            z-index: -1;
+            top:50%;
+            left:50%;
+            margin-top:-480px;
+            margin-left:-300px;"/>
+
+            </div>
+
+            <div style="width:200px;
+            margin-bottom: 40px;
+            margin-top: 20px;">
+            <p>Choose your confidence for the colour of the next bead:</p>
+            <div style="width:50px; float: left;">
+            <p><img src="img/red_bead.png"/></p>
+            </div>
+            <div style="width:50px; float: right;">
+            <p><img src="img/green_bead.png"/></p>
+            </div>
+            </div>
+
+            `,
+            slider_width: 100,
+        }
+        timeline.push(participant_stating_confidence);
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////
+    // The functions with an agent.
+
+    // Jar and agent coming onto the screen, and then remaining there for 1 second during practice, and 0.2s during
+    // real trials.
+    function jarAgentEnteringScreen (agent_img_path, practice) {
+        let trialduration1;
+        let trialduration2;
+        let step_inc;
+        if (practice) {
+            trialduration1 = 8;
+            trialduration2 = 1000;
+            step_inc = 1;
+        } else {
+            trialduration1 = 1;
+            trialduration2 = 200;
+            step_inc = 2;
+        };
+
+        let percentage;
+        for (let step = 0; step < 131; step = step + step_inc) {
             percentage = step / 2 - 15;
             const change_jar_on = {
                 type: jsPsychHtmlKeyboardResponse,
@@ -46,10 +254,10 @@
                  height:200px;
                  width:auto"/>
 
-                <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and agent</p>
+                <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and player</p>
                 `,
                 choices: "NO_KEYS",
-                trial_duration: 8,
+                trial_duration: trialduration1,
             }
             timeline.push(change_jar_on);
         }
@@ -70,10 +278,10 @@
              height:200px;
              width:auto"/>
 
-            <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and agent</p>
+            <p style="position:absolute; top:90%; left:50%; transform: translate(-50%, -50%);">New jar and player</p>
             `,
             choices: "NO_KEYS",
-            trial_duration: 1000,
+            trial_duration: trialduration2,
         }
         timeline.push(jar_agent_still);
     }
@@ -104,10 +312,20 @@
         }
     }
 
-    function agentChoosingBeads (agent_img_path) {
+    function agentChoosingBeads (agent_img_path, practice) {
+        let trialduration1;
+        let step_inc;
+        if (practice) {
+            trialduration1 = 8;
+            step_inc = 1;
+        } else {
+            trialduration1 = 1;
+            step_inc = 2;
+        };
+
         let percentage;
         let hand_img_path;
-        for (let step = 0; step < 261; step++) {
+        for (let step = 0; step < 261; step = step + step_inc) {
             if (step < 131) {
                 percentage = step / 2 - 10;
                 hand_img_path = 'img/hand_back.png'
@@ -146,17 +364,27 @@
                 <p style="position:absolute;
                 top:90%;
                 left:50%;
-                transform: translate(-50%, -50%);">Agent picking beads</p>
+                transform: translate(-50%, -50%);">Player picking beads</p>
 
                 `,
                 choices: "NO_KEYS",
-                trial_duration: 8,
+                trial_duration: trialduration1,
             }
             timeline.push(agent_choosing_beads);
         }
     }
 
-    function agent_viewing_beads(agent_img_path, agent_decision_img_path) {
+    function agent_viewing_beads(agent_img_path, agent_decision_img_path, practice) {
+        let trialduration1;
+        let trialduration2;
+        if (practice) {
+            trialduration1 = 1500;
+            trialduration2 = 1000;
+        } else {
+            trialduration1 = 200;
+            trialduration2 = 1000;
+        };
+
         const agent_viewing_beads = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: `
@@ -183,16 +411,14 @@
              width:auto;
              "/>
 
-
-
             <p style="position:absolute;
             top:90%;
             left:50%;
-            transform: translate(-50%, -50%);">Agent making a decision</p>
+            transform: translate(-50%, -50%);">Player making a decision</p>
 
             `,
             choices: "NO_KEYS",
-            trial_duration: 1500,
+            trial_duration: trialduration1,
         }
         timeline.push(agent_viewing_beads);
 
@@ -235,19 +461,29 @@
             <p style="position:absolute;
             top:90%;
             left:50%;
-            transform: translate(-50%, -50%);">Agent making a decision</p>
+            transform: translate(-50%, -50%);">Player making a decision</p>
 
             `,
             choices: "NO_KEYS",
-            trial_duration: 1000,
+            trial_duration: trialduration2,
         }
         timeline.push(agent_decided);
     }
 
-    function agentReplacingBeads (agent_img_path, agent_decision_img_path) {
+    function agentReplacingBeads (agent_img_path, agent_decision_img_path, practice) {
+        let trialduration1;
+        let step_inc;
+        if (practice) {
+            trialduration1 = 8;
+            step_inc = 1;
+        } else {
+            trialduration1 = 1;
+            step_inc = 2;
+        };
+
         let percentage;
         let hand_img_path;
-        for (let step = 0; step < 261; step++) {
+        for (let step = 0; step < 261; step = step + step_inc) {
             if (step < 131) {
                 percentage = step / 2 - 10;
                 hand_img_path = 'img/hand_fist_edited.png'
@@ -295,20 +531,30 @@
                 <p style="position:absolute;
                 top:90%;
                 left:50%;
-                transform: translate(-50%, -50%);">Agent replacing beads</p>
+                transform: translate(-50%, -50%);">Player replacing beads</p>
 
                 `,
                 choices: "NO_KEYS",
-                trial_duration: 8,
+                trial_duration: trialduration1,
             }
             timeline.push(agent_replacing_beads);
         }
     }
 
-    function participantChoosingBeads (agent_img_path, agent_decision_img_path, participant_beads_img_path) {
+    function participantChoosingBeads (agent_img_path, agent_decision_img_path, participant_beads_img_path, practice) {
+        let trialduration1;
+        let step_inc;
+        if (practice) {
+            trialduration1 = 8;
+            step_inc = 1;
+        } else {
+            trialduration1 = 1;
+            step_inc = 2;
+        };
+
         let percentage;
         let hand_img_path;
-        for (let step = 0; step < 261; step++) {
+        for (let step = 0; step < 261; step = step + step_inc) {
             if (step < 131) {
                 percentage = step / 2 - 10;
                 hand_img_path = 'img/hand_back.png'
@@ -360,12 +606,12 @@
 
                 `,
                 choices: "NO_KEYS",
-                trial_duration: 8,
+                trial_duration: trialduration1,
             }
             timeline.push(participant_choosing_beads);
         }
 
-        for (let step = 0; step < 131; step++) {
+        for (let step = 0; step < 131; step = step + step_inc) {
             percentage = 120 - step/2;
             const participant_viewing_beads = {
                 type: jsPsychHtmlKeyboardResponse,
@@ -410,7 +656,7 @@
 
                 `,
                 choices: "NO_KEYS",
-                trial_duration: 8,
+                trial_duration: trialduration1,
             }
             timeline.push(participant_viewing_beads);
         }
@@ -462,7 +708,7 @@
             <div style="width:200px;
             margin-bottom: 40px;
             margin-top: 20px;">
-            <p>Choose your confidence for a particular colour.</p>
+            <p>Choose your confidence for the colour of the next bead:</p>
             <div style="width:50px; float: left;">
             <p><img src="img/red_bead.png"/></p>
             </div>
@@ -498,6 +744,8 @@
             }
         });
 
+    console.log(typeof jsPsych)
+
     let timeline = [];
 
     const welcome = {
@@ -511,9 +759,45 @@
         choices: [' '],
         stimulus: `
 
-        <p>Instructions will go here.</p>
+        <p>This page contains the instructions for the experiment.</p>
 
-        <p>Press 'space' key to continue.</p>
+        <p>Please read them carefully.</p>
+
+        <p>There are 9 jars, each of which contains a different number of red and green beads.
+         They look something like this:</p>
+
+        <p><img src="img/all_jars.png" style="height:800px; width:auto"</p>
+
+        <p>The numbers below each of the jars indicate the ratios of red:green beads in each.</p>
+
+        <p>You will be given one of these jars at random. But, you won't know which jar it is you have been given, as it will be
+        presented to you covered, so you can't see the contents of the jar. This would look something like this:</p>
+
+        <p><img src="img/jar_covered.png"</p>
+
+        <p>You will then draw 8 random beads from the jar. You might draw something that looks like this:</p>
+
+        <p><img src ="img/bead_samples/3red.png"</p>
+
+        <p>Based on these beads, your task is to guess, if you were to take another bead from the jar, what color it
+        would be. But you only need to state a confidence, using a confidence bar. For instance, if you were strongly
+        confident that the next color would be red, you might choose to place your guess on the confidence scale like
+        so:</p>
+
+        <p><img src="img/agent_choices/5.png"></p>
+
+        <p>If you think it could be a 50-50 chance of either red or green, you might choose to give a confidence like
+        this:</p>
+
+        <p><img src="img/agent_choices/50.png"</p>
+
+        <p>After you have taken a guess, the jar will be swapped for a new, random jar, after which you will repeat
+        the task.</p>
+
+        <p>Let's do some practice trials, 5 in total. If you're ready to start, and feel that you understand the
+         instructions, go ahead and press the 'space' key.</p>
+
+        <p> &lt; Press 'space' to continue &gt; </p>
 
         `
     }
@@ -527,179 +811,117 @@
     }
     timeline.push(enter_fullscreen);
 
-    let agent_img_path;
-    let agent_choice;
-    let bead_samples;
-    for (let trial = 0; trial < 5; trial++) {
-        agent_img_path = `img/faces/${trial + 1}.png`;
-        agent_choice = `img/agent_choices/${(trial + 1) * 5}.png`;
-        bead_samples = `img/bead_samples/${trial + 1}red.png`;
+    // Practice trials, 5 in total, done without an agent
 
-        jarAgentEnteringScreen(agent_img_path);
-        agentChoosingBeads(agent_img_path);
-        agent_viewing_beads(agent_img_path, agent_choice);
-        agentReplacingBeads(agent_img_path, agent_choice);
-        participantChoosingBeads(agent_img_path, agent_choice, bead_samples);
-        participantStateConfidence(agent_img_path, agent_choice, bead_samples);
+    let bead_samples_path;
+    const bead_samples_practice1 = [1, 3, 5, 2, 7];
+    for (let trial = 0; trial < 1; trial++) {
+        bead_samples_path = 'img/bead_samples/' + bead_samples_practice1[trial] + 'red.png';
+        jarEnteringScreen();
+        participantChoosingBeadsWithoutAgent(bead_samples_path);
+        participantStateConfidenceWithoutAgent(bead_samples_path);
         fixation();
     }
 
+    const exit_fullscreen = {
+    type: jsPsychFullscreen,
+    message: '<p>Practice trials completed.</p>',
+    fullscreen_mode: false
+    }
+    timeline.push(exit_fullscreen);
 
+    const instructions2 = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: `
 
+        <p>Practice trials are over. Hopefully the task was simple enough to grasp. We're now going to add an
+        additional element to the task. You will perform the guesswork just like before, but you will do so alongside other players.
+        There are 20 players in total, and a new player will be swapped in for each trial. They will take their turn
+        first, picking out 8 beads, making a guess, then replacing the beads back into the jar. You'll be able to see the guess they make, but you won't be
+        able to see their beads. This should help you in making your own decision, as their guess provides some extra
+         information on which jar might be in front of you both.</p>
 
+        <p>We'll run another 5 practice trials, this time with the additional players. If you're ready to start, go
+         ahead and press the 'space' key.</p>
 
-//     const trial = {
-//     type: jsPsychHtmlSliderResponse,
-//     stimulus: `
-// <div style="z-index:-1; position:absolute; top:50%; left:50%;
-//              margin-top:-233px; margin-left:-233px;"><img src='img/jar_covered.png' /></div>
-// <div style="width:200px;
-// margin-bottom: 40px;">
-//         <p>Choose your confidence for a particular colour.</p>
-//         <div style="width:50px; float: left;">
-//             <p><img src="img/red_bead.png"/></p>
-//         </div>
-//         <div style="width:50px; float: right;">
-//             <p><img src="img/green_bead.png"/></p>
-//         </div>
-//
-//         </div>
-//
-// `,
-//         slider_width: 100,
-//     // labels: ['100% chance of a red bead', '50% chance of either red or green', '100% chance of a green bead']
-// };
+        <p> &lt; Press 'space' to continue &gt; </p>
 
-    // timeline.push(trial);
+        `
+    }
+    timeline.push(instructions2);
 
-    // jarAgentLeavingScreen();
+    timeline.push(enter_fullscreen);
 
-    // const welcome = {
-    //     type: jsPsychHtmlKeyboardResponse,
-    //     stimulus: "Welcome to the experiment. Press any key to begin."
-    // }
-    // timeline.push(welcome);
-    //
-    // const instructions = {
-    //     type: jsPsychHtmlKeyboardResponse,
-    //     choices: [' '],
-    //     stimulus: `
-    //
-    //     <p>Instructions will go here.</p>
-    //
-    //     <p>Press 'space' key to continue.</p>
-    //
-    //     `
-    // }
-    // timeline.push(instructions);
-    //
-    //
-    // const jar = {
-    //     type: jsPsychHtmlKeyboardResponse,
-    //     stimulus: `
-    //     <img src='img/jar_covered.png' style="position:absolute; top:50%; left:50%;
-    //         margin-top:-233px; margin-left:-233px;"></img>
-    //     `,
-    // }
-    // timeline.push(jar);
+    let agent_img_path;
+    let agent_choice_path;
+    const agent_choices_practice2 = [10, 50, 30, 95, 50];
+    const bead_samples_practice2 = [7, 3, 4, 6, 1];
+    for (let trial = 0; trial < 1; trial++) {
+        agent_img_path = `img/faces/${trial + 1}.png`;
+        agent_choice_path = 'img/agent_choices/' + agent_choices_practice2[trial] + '.png';
+        bead_samples_path = 'img/bead_samples/' + bead_samples_practice2[trial] + 'red.png';
 
-    // let num_red_samples;
-    // for (let iter = 0; iter < 5; iter++) {
-    //     let face_path = `img/faces/${iter + 1}.png`;
-    //
-    //     num_red_samples = getRandomInt(6) + 1;
-    //
-    //     const new_trial_procedure = {
-    //         type: jsPsychHtmlKeyboardResponse,
-    //         stimulus: `
-    //
-    //
-    //         `
-    //
-    //     }
-    //
-    //
-    //     const test_procedure = {
-    //         type: jsPsychHtmlKeyboardResponse,
-    //         stimulus: `
-    //         <img src='img/sample_${num_red_samples}_red.png'
-    //         style="position:absolute;
-    //         top:50%;
-    //         left:50%;
-    //         margin-top:-47px;
-    //         margin-left:-45px;"></img>
-    //         <img src="${face_path}"
-    //         style="position:absolute;
-    //         top:30%;
-    //         left:80%;
-    //         height:200px;
-    //         width:auto"></img>
-    //         `,
-    //         data: {
-    //             task: 'trial',
-    //             number_red_samples: num_red_samples
-    //         }
-    //     }
-    //     timeline.push(test_procedure);
-    //
-    //
-    //     // const test_stimuli = [
-    //     // {stimulus: `
-    //     //     <img src='img/sample_1_red.png'
-    //     //     style="position:absolute;
-    //     //     top:50%;
-    //     //     left:50%;
-    //     //     margin-top:-47px;
-    //     //     margin-left:-45px;"></img>
-    //     //     <img src="${face_path}"
-    //     //     style="position:absolute;
-    //     //     top:50%;
-    //     //     left:80%";></img>
-    //     //     `},
-    //     // {stimulus: `<img src='img/sample_2_red.png' ></img>`},
-    //     // // {stimulus: "img/sample_3_red.png"},
-    //     // // {stimulus: "img/sample_4_red.png"},
-    //     // // {stimulus: "img/sample_5_red.png"},
-    //     // // {stimulus: "img/sample_6_red.png"},
-    //     // // {stimulus: "img/sample_7_red.png"},
-    //     //     ]
-    //
-    //     const fixation = {
-    //         type: jsPsychHtmlKeyboardResponse,
-    //         stimulus: `<div style="font-size:60px;">+</div>`,
-    //         choices: "NO_KEYS",
-    //         trial_duration: 1000,
-    //         data: {
-    //             task: 'fixation'
-    //         }
-    //     }
-    //     timeline.push(fixation);
-    //
-    //     // const test = {
-    //     //     type: jsPsychHtmlKeyboardResponse,
-    //     //     stimulus: jsPsych.timelineVariable('stimulus'),
-    //     //     // choices: ['f', 'j'],
-    //     //     data: {
-    //     //         task: 'response',
-    //     //     },
-    //     // }
-    //     //
-    //     // const test_procedure = {
-    //     //     timeline: [fixation, test],
-    //     //     timeline_variables: test_stimuli,
-    //     //     randomize_order: true,
-    //     //     repetitions: 1,
-    //     // }
-    //     // timeline.push(test_procedure);
-    //
-    //
-    // }
+        jarAgentEnteringScreen(agent_img_path, true);
+        agentChoosingBeads(agent_img_path, true);
+        agent_viewing_beads(agent_img_path, agent_choice_path, true);
+        agentReplacingBeads(agent_img_path, agent_choice_path, true);
+        participantChoosingBeads(agent_img_path, agent_choice_path, bead_samples_path, true);
+        participantStateConfidence(agent_img_path, agent_choice_path, bead_samples_path, true);
+        fixation();
+    }
 
+    timeline.push(exit_fullscreen);
 
+    const instructions3 = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: `
 
+        <p>Now you have had a chance to practice the task, we'll do real trials now. It will be greatly speeded up, so
+        you can make each guess much more quickly. There will be 115 trials in total. Good luck!</p>
 
+        <p> &lt; Press 'space' to continue &gt; </p>
 
+        `
+    }
+    timeline.push(instructions3);
 
+    timeline.push(enter_fullscreen);
+
+    // Running the real trials
+    // I was going to read the choices and beads directly from the text files. But I'm too lazy, and it seems a little
+    // complicated. So for now, I'll just copy and paste them here.
+    const agent_choices_trials = [80, 85, 90, 50, 35, 40, 5, 65, 60, 50, 30, 40, 30, 10, 90, 35, 95, 20, 55, 20, 5, 95, 70, 30, 45, 5, 30, 5, 65, 95, 80, 30, 25, 5, 25, 80, 55, 50, 30, 40, 10, 15, 95, 55, 85, 45, 25, 10, 30, 65, 45, 60, 50, 25, 40, 5, 75, 70, 45, 55, 5, 5, 35, 90, 55, 60, 55, 25, 5, 5, 85, 45, 60, 30, 30, 5, 15, 45, 55, 20, 45, 40, 15, 15, 95, 90, 60, 45, 25, 5, 5, 75, 75, 30, 50, 55, 5, 5, 90, 45, 60, 55, 55, 5, 15, 85, 95, 55, 75, 25, 15, 5, 95, 55, 50];
+    const bead_samples_trials = [1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3];
+    for (let trial = 0; trial < 115; trial++) {
+        agent_img_path = `img/faces/${trial % 20 + 1}.png`;
+        agent_choice_path = 'img/agent_choices/' + agent_choices_trials[trial] + '.png';
+        bead_samples_path = 'img/bead_samples/' + bead_samples_trials[trial] + 'red.png';
+
+        jarAgentEnteringScreen(agent_img_path, false);
+        agentChoosingBeads(agent_img_path, false);
+        agent_viewing_beads(agent_img_path, agent_choice_path, false);
+        agentReplacingBeads(agent_img_path, agent_choice_path, false);
+        participantChoosingBeads(agent_img_path, agent_choice_path, bead_samples_path, false);
+        participantStateConfidence(agent_img_path, agent_choice_path, bead_samples_path, false);
+        fixation();
+    }
+
+    timeline.push(exit_fullscreen);
+
+    const finished = {
+        type: jsPsychHtmlKeyboardResponse,
+        choices: [' '],
+        stimulus: `
+
+        <p>The experiment is now complete. Many thanks for your participation.</p>
+
+        <p> &lt; Press 'space' to exit &gt; </p>
+
+        `
+    }
+    timeline.push(finished);
 
     jsPsych.run(timeline);
 
